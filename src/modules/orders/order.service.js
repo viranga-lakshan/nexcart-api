@@ -1,5 +1,6 @@
 const ApiError = require('../../utils/ApiError');
 const { getPagination, buildPaginationMeta } = require('../../utils/pagination');
+const { withProductMedia } = require('../../utils/productMedia');
 const orderRepository = require('./order.repository');
 
 const toMoney = (value) => Number(value).toFixed(2);
@@ -16,7 +17,7 @@ const normalizeOrder = (order) => ({
     quantity: item.quantity,
     unitPrice: toMoney(item.unitPrice),
     lineTotal: toMoney(Number(item.unitPrice) * item.quantity),
-    product: item.product,
+    product: item.product ? withProductMedia(item.product) : item.product,
     createdAt: item.createdAt,
   })),
   createdAt: order.createdAt,

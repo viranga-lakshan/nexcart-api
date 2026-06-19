@@ -1,9 +1,11 @@
 const ApiError = require('../../utils/ApiError');
 const createSlug = require('../../utils/slug');
+const { resolveMediaUrl } = require('../../utils/productMedia');
 const categoryRepository = require('./category.repository');
 
 const normalizeCategory = (category) => ({
   ...category,
+  imageUrl: category.imageUrl ? resolveMediaUrl(category.imageUrl) : category.imageUrl,
   productCount: category._count.products,
   _count: undefined,
 });

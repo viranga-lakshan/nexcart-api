@@ -244,6 +244,24 @@ sudo docker compose -f docker-compose.prod.yml up -d --build
 
 Keep at least **1–2 GB free** on `/` for Docker builds.
 
+### Product images on EC2
+
+Seller images are stored on disk under `uploads/products/` and referenced in the database as `/uploads/products/...`.
+
+1. Set in EC2 `.env`:
+   ```env
+   PUBLIC_API_URL=http://13.60.211.231:5000
+   ```
+   The API will return full image URLs (e.g. `http://13.60.211.231:5000/uploads/products/abc.jpg`) so the Vercel frontend can load them without extra config.
+
+2. Copy uploads from your PC once:
+   ```powershell
+   scp -r "e:\nexcart\nexcart-api\uploads" ubuntu@13.60.211.231:/home/ubuntu/nexcart-api/
+   ```
+   Or run `scripts/sync-uploads-to-ec2.ps1` (update key path).
+
+3. `docker-compose.prod.yml` mounts `./uploads:/app/uploads` so files persist across deploys.
+
 ---
 
 ## Security reminders

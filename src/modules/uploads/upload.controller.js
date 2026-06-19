@@ -1,12 +1,13 @@
 const ApiError = require('../../utils/ApiError');
 const { sendSuccess } = require('../../utils/apiResponse');
+const { resolveMediaUrl } = require('../../utils/productMedia');
 
 const uploadProductImage = async (req, res) => {
   if (!req.file) {
     throw new ApiError(400, 'Image file is required');
   }
 
-  const url = `/uploads/products/${req.file.filename}`;
+  const url = resolveMediaUrl(`/uploads/products/${req.file.filename}`);
 
   return sendSuccess(res, {
     statusCode: 201,

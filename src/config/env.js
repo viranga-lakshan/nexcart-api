@@ -15,6 +15,7 @@ const envSchema = z.object({
   BCRYPT_SALT_ROUNDS: z.coerce.number().int().min(10).max(15).default(12),
   REFRESH_TOKEN_COOKIE_NAME: z.string().default('refreshToken'),
   PASSWORD_RESET_TOKEN_EXPIRES_MINUTES: z.coerce.number().int().positive().default(15),
+  PUBLIC_API_URL: z.string().optional().default(''),
 });
 
 const parsedEnv = envSchema.safeParse(process.env);
@@ -26,8 +27,11 @@ if (!parsedEnv.success) {
 
 const env = parsedEnv.data;
 
+const publicApiUrl = env.PUBLIC_API_URL.trim().replace(/\/$/, '');
+
 module.exports = {
   ...env,
+  PUBLIC_API_URL: publicApiUrl,
   CORS_ORIGINS: env.CORS_ORIGIN.split(',').map((origin) => origin.trim()),
   IS_PRODUCTION: env.NODE_ENV === 'production',
 };
