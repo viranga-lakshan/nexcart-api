@@ -16,10 +16,40 @@ const buildImageUrl = (photoId, options = {}) => {
   return `https://images.unsplash.com/photo-${photoId}?${params.toString()}`;
 };
 
+const toUploadPath = (value) => {
+  if (!value || typeof value !== 'string') {
+    return null;
+  }
+
+  if (value.startsWith('/uploads/')) {
+    return value;
+  }
+
+  if (value.startsWith('http://') || value.startsWith('https://')) {
+    try {
+      const { pathname } = new URL(value);
+
+      if (pathname.startsWith('/uploads/')) {
+        return pathname;
+      }
+    } catch {
+      return null;
+    }
+  }
+
+  return null;
+};
+
 /** Turn /uploads/... into a full URL when PUBLIC_API_URL is configured. */
 const resolveMediaUrl = (path) => {
   if (!path || typeof path !== 'string') {
     return path ?? null;
+  }
+
+  const uploadPath = toUploadPath(path);
+
+  if (uploadPath && env.PUBLIC_API_URL) {
+    return `${env.PUBLIC_API_URL.replace(/\/$/, '')}${uploadPath}`;
   }
 
   if (path.startsWith('http://') || path.startsWith('https://')) {
@@ -27,7 +57,7 @@ const resolveMediaUrl = (path) => {
   }
 
   if (path.startsWith('/') && env.PUBLIC_API_URL) {
-    return `${env.PUBLIC_API_URL}${path}`;
+    return `${env.PUBLIC_API_URL.replace(/\/$/, '')}${path}`;
   }
 
   return path;
