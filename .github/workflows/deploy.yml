@@ -67,7 +67,14 @@ jobs:
               fi
             }
 
+            # Remove legacy manually-started container if it blocks port 5000
+            sudo docker rm -f nexcart-api 2>/dev/null || true
+
+            run_compose -f docker-compose.prod.yml down || true
             run_compose -f docker-compose.prod.yml up -d --build
             sudo docker image prune -f
+
+            echo "Waiting for API to start..."
+            sleep 15
             echo "Deploy finished. Health check:"
-            curl -fsS http://localhost:5000/api/v1/health || true
+            curl -fsS http://localhost:5000/api/v1/health

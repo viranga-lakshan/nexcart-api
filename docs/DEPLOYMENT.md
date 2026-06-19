@@ -212,6 +212,37 @@ scp -r "e:\nexcart\nexcart-api\uploads" ec2-user@YOUR_EC2_IP:/home/ec2-user/nexc
 | CORS errors from Vercel | Add Vercel URL to `CORS_ORIGIN` in EC2 `.env`, redeploy |
 | Images 404 | Copy `uploads/` to EC2 or implement S3 (next step) |
 | Lint fails in CI | Run `npm run lint` locally and fix |
+| `no space left on device` during deploy | Free disk — see **Disk full on EC2** below |
+
+### Disk full on EC2
+
+If deploy fails with `no space left on device`, SSH in and free space:
+
+```bash
+df -h
+sudo docker system prune -a -f
+sudo docker volume prune -f
+sudo apt autoremove -y
+sudo journalctl --vacuum-time=3d
+df -h
+```
+
+If you use **Neon/Supabase** for `DATABASE_URL`, you do not need the local `postgres` container:
+
+```bash
+sudo docker stop postgres
+sudo docker rm postgres
+sudo docker volume prune -f
+```
+
+Then redeploy:
+
+```bash
+cd ~/nexcart-api
+sudo docker compose -f docker-compose.prod.yml up -d --build
+```
+
+Keep at least **1–2 GB free** on `/` for Docker builds.
 
 ---
 
