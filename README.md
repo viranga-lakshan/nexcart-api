@@ -122,16 +122,32 @@ Admin routes are protected with middleware-based RBAC and require the `ADMIN` ro
 
 ## Deployment
 
-For Render or Railway:
+### Local development
 
-- Add all `.env.example` values in the platform dashboard.
-- Use Neon PostgreSQL for `DATABASE_URL`.
-- Build command: `npm install && npm run prisma:generate`
-- Start command: `npm start`
-- Run migrations with `npm run prisma:migrate` before release.
+```bash
+npm install
+cp .env.example .env
+npm run prisma:generate
+npm run prisma:migrate
+npm run dev
+```
+
+Or with Docker + local Postgres: `docker compose up --build`
+
+### AWS EC2 (CI/CD)
+
+Push to `main` runs lint and deploys to EC2 via GitHub Actions.
+
+- **CI:** `.github/workflows/ci.yml` — lint on every push/PR
+- **Deploy:** `.github/workflows/deploy.yml` — SSH deploy on push to `main`
+- **Production compose:** `docker-compose.prod.yml` (API only, Neon via `.env` on server)
+
+Full setup (EC2, GitHub Secrets, local vs production): **[docs/DEPLOYMENT.md](docs/DEPLOYMENT.md)**
+
+Required GitHub Secrets: `EC2_HOST`, `EC2_USER`, `EC2_SSH_KEY`, `EC2_APP_DIR`
 
 ## Next Features
 
 1. Add automated tests for auth, checkout, and RBAC.
-2. Add seed data for demo users, categories, and products.
-3. Add CI workflow and deployment notes for Render or Railway.
+2. Add S3 uploads for seller product images.
+3. Add stricter rate limits on auth endpoints.

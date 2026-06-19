@@ -1,0 +1,13 @@
+# Production compose for AWS EC2 (Neon PostgreSQL via .env — no local Postgres).
+# Usage on server: docker compose -f docker-compose.prod.yml up -d --build
+
+services:
+  api:
+    build: .
+    restart: unless-stopped
+    ports:
+      - '5000:5000'
+    env_file:
+      - .env
+    volumes:
+      - ./uploads:/app/uploads
