@@ -65,13 +65,19 @@ sudo usermod -aG docker ec2-user
 # Log out and back in so docker group applies
 ```
 
-Install Docker Compose plugin:
+Install Docker Compose plugin (required — CI/CD uses `docker compose`):
 
 ```bash
-sudo mkdir -p /usr/local/lib/docker/cli-plugins
-sudo curl -SL https://github.com/docker/compose/releases/latest/download/docker-compose-linux-x86_64 -o /usr/local/lib/docker/cli-plugins/docker-compose
-sudo chmod +x /usr/local/lib/docker/cli-plugins/docker-compose
+sudo apt update
+sudo apt install -y docker-compose-v2
 docker compose version
+```
+
+Add your user to the docker group (optional — CI/CD uses `sudo`):
+
+```bash
+sudo usermod -aG docker ubuntu
+# log out and SSH back in
 ```
 
 ### 2. Clone the repo on EC2
